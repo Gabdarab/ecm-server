@@ -3,7 +3,7 @@ var url = require("url");
 var fs = require("fs");
 var bl = require("bl");
 
-/*
+
 var contacts={
 	"person":[
 		{
@@ -37,39 +37,42 @@ var contacts={
 		
 	]
 };
-*/
+
 
 
 var server = http.createServer(function (req, res) {
   	var parsedUrl = url.parse(req.url, true);
-  	var body="";
-  	var body2="";
+  	var responseString = "";
 
 	if(parsedUrl.pathname === "/postlocation"){
 
 	  	
-	  	req.on('data', function (chunk){
-	  		body = JSON.parse(chunk); 
-	  		body2=chunk;
-	  	})
+	  	req.on('data', function (data){
+	  		responseString += data;
+	  	});
 	  	req.on('end', function(){
-	  		//console.log(body);
-	  		fs.write("./variablePost.js",body2);
+	  		var responseObject = JSON.parse(responseString);
+	  		console.log(responseObject.person[0].vorname);
+
 	    	res.writeHead(200, { 'Content-Type': 'application/json', 
 	    		'Access-Control-Allow-Origin': '*',
 	    		'Access-Control-Allow-Headers' : 'Content-Type'
 	    	});
 	    	res.end(JSON.stringify({"message":"A-OK!"}));
-	    })
-		
-	}else{
-
+	    });
+	}else if (parsedUrl.pathname === "/getcontacts"){
+	   	res.writeHead(200, { 'Content-Type': 'application/json', 
+    		'Access-Control-Allow-Origin': '*',
+    		'Access-Control-Allow-Headers' : 'Content-Type'
+	    });
+	    res.end(JSON.stringify(contacts));
+	} else {
 		res.writeHead(404, { 'Content-Type': 'application/json', 
 	    	'Access-Control-Allow-Origin': '*',
 	    	'Access-Control-Allow-Headers' : 'Content-Type'
-		});
-		res.end();
-	};
+	    });
+	    res.end();
+	}
 
 });
 
