@@ -1,0 +1,22 @@
+{
+  "name": "ecm-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ecm-server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gabdarab/ecm-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gabdarab/ecm-server/issues"
+  },
+  "homepage": "https://github.com/Gabdarab/ecm-server",
+  "dependencies": {
+    "bl": "^0.9.3"
+  }
+}

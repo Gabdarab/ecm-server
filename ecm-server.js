@@ -1,6 +1,9 @@
 var http = require("http");
 var url = require("url");
+var fs = require("fs");
+var bl = require("bl");
 
+/*
 var contacts={
 	"person":[
 		{
@@ -34,27 +37,70 @@ var contacts={
 		
 	]
 };
+*/
 
 
 var server = http.createServer(function (req, res) {
   	var parsedUrl = url.parse(req.url, true);
-  	var result;
+  	var body="";
+  	var body2="";
 
-	if (parsedURL.pathname === "/api/contacts")
-    	result = contacts;
+	if(parsedUrl.pathname === "/postlocation"){
 
-  	if (result) {
-    	res.writeHead(200, { 'Content-Type': 'application/json' });
-    	res.end(JSON.stringify(result));
-  	} else {
-    	res.writeHead(404);
-    	res.end();
-  	}
+	  	
+	  	req.on('data', function (chunk){
+	  		body = JSON.parse(chunk); 
+	  		body2=chunk;
+	  	})
+	  	req.on('end', function(){
+	  		//console.log(body);
+	  		fs.write("./variablePost.js",body2);
+	    	res.writeHead(200, { 'Content-Type': 'application/json', 
+	    		'Access-Control-Allow-Origin': '*',
+	    		'Access-Control-Allow-Headers' : 'Content-Type'
+	    	});
+	    	res.end(JSON.stringify({"message":"A-OK!"}));
+	    })
+		
+	}else{
+
+		res.writeHead(404, { 'Content-Type': 'application/json', 
+	    	'Access-Control-Allow-Origin': '*',
+	    	'Access-Control-Allow-Headers' : 'Content-Type'
+		});
+		res.end();
+	};
+
 });
+
+
+/*
+var server = http.createServer(function (req, res) {
+  	var parsedUrl = url.parse(req.url, true);
+  	//console.log(parsedUrl);
+  	//console.log(req.method);
+  	//console.log(req.url);
+
+	if (parsedUrl.pathname === "/getcontacts"){
+	   	res.writeHead(200, { 'Content-Type': 'application/json', 
+    		'Access-Control-Allow-Origin': '*',
+    		'Access-Control-Allow-Headers' : 'Content-Type'
+	    });
+	    res.end(JSON.stringify(contacts));
+	} else {
+		res.writeHead(404, { 'Content-Type': 'application/json', 
+	    	'Access-Control-Allow-Origin': '*',
+	    	'Access-Control-Allow-Headers' : 'Content-Type'
+	    });
+	    res.end();
+	}	
+	
+});
+*/
+
 server.listen(8000);
 console.log("Server is running.");
 
-/*
-var parsedUrl = url.parse("http://127.0.0.1:8000/api/contacts", true);
-console.log(parsedUrl);
-*/
+
+
+
