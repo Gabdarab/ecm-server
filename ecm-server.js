@@ -1,7 +1,14 @@
 var http = require("http");
 var url = require("url");
-var fs = require("fs");
-var bl = require("bl");
+//var fs = require("fs");
+//var bl = require("bl");
+
+
+var user ={
+	"vorname" : "Stefan",
+	"nachname" : "Servermann",
+	"regcode" : "Servercode"
+};
 
 
 var contacts={
@@ -38,34 +45,55 @@ var contacts={
 	]
 };
 
-
-
 var server = http.createServer(function (req, res) {
   	var parsedUrl = url.parse(req.url, true);
   	var responseString = "";
-
-	if(parsedUrl.pathname === "/postlocation"){
-
-	  	
+  	// post user information upon registration
+	if(parsedUrl.pathname === "/postregistration"){
 	  	req.on('data', function (data){
 	  		responseString += data;
 	  	});
 	  	req.on('end', function(){
 	  		var responseObject = JSON.parse(responseString);
-	  		console.log(responseObject.person[0].vorname);
+	  		console.log(responseObject.vorname);
 
 	    	res.writeHead(200, { 'Content-Type': 'application/json', 
 	    		'Access-Control-Allow-Origin': '*',
 	    		'Access-Control-Allow-Headers' : 'Content-Type'
 	    	});
-	    	res.end(JSON.stringify({"message":"A-OK!"}));
+	    	res.end(JSON.stringify({"message":"Registration_POST_OK"}));
 	    });
+	// post user location
+	}else if (parsedUrl.pathname === "/postlocation") {
+		req.on('data', function (data){
+	  		responseString += data;
+	  	});
+	  	req.on('end', function(){
+	  		var responseObject = JSON.parse(responseString);
+	  		var dateToday = new Date(responseObject.timestamp);
+	  		console.log(dateToday);
+
+	    	res.writeHead(200, { 'Content-Type': 'application/json', 
+	    		'Access-Control-Allow-Origin': '*',
+	    		'Access-Control-Allow-Headers' : 'Content-Type'
+	    	});
+	    	res.end(JSON.stringify({"message":"Location_POST_OK"}));
+	    });
+	// get info for registered users
+	}else if (parsedUrl.pathname === "/getregistered"){
+	   	res.writeHead(200, { 'Content-Type': 'application/json', 
+    		'Access-Control-Allow-Origin': '*',
+    		'Access-Control-Allow-Headers' : 'Content-Type'
+	    });
+	    res.end(JSON.stringify(user));
+	// get contacts location data
 	}else if (parsedUrl.pathname === "/getcontacts"){
 	   	res.writeHead(200, { 'Content-Type': 'application/json', 
     		'Access-Control-Allow-Origin': '*',
     		'Access-Control-Allow-Headers' : 'Content-Type'
 	    });
 	    res.end(JSON.stringify(contacts));
+	// file / api not found
 	} else {
 		res.writeHead(404, { 'Content-Type': 'application/json', 
 	    	'Access-Control-Allow-Origin': '*',
@@ -75,31 +103,6 @@ var server = http.createServer(function (req, res) {
 	}
 
 });
-
-
-/*
-var server = http.createServer(function (req, res) {
-  	var parsedUrl = url.parse(req.url, true);
-  	//console.log(parsedUrl);
-  	//console.log(req.method);
-  	//console.log(req.url);
-
-	if (parsedUrl.pathname === "/getcontacts"){
-	   	res.writeHead(200, { 'Content-Type': 'application/json', 
-    		'Access-Control-Allow-Origin': '*',
-    		'Access-Control-Allow-Headers' : 'Content-Type'
-	    });
-	    res.end(JSON.stringify(contacts));
-	} else {
-		res.writeHead(404, { 'Content-Type': 'application/json', 
-	    	'Access-Control-Allow-Origin': '*',
-	    	'Access-Control-Allow-Headers' : 'Content-Type'
-	    });
-	    res.end();
-	}	
-	
-});
-*/
 
 server.listen(8000);
 console.log("Server is running.");
