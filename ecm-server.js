@@ -4,11 +4,13 @@ var url = require("url");
 //var bl = require("bl");
 
 
+
 var user ={
 	"vorname" : "Stefan",
 	"nachname" : "Servermann",
 	"regcode" : "Servercode"
 };
+
 
 
 var contacts={
@@ -57,7 +59,7 @@ var server = http.createServer(function (req, res) {
 	  		var responseObject = JSON.parse(responseString);
 	  		console.log(responseObject.vorname);
 
-	    	res.writeHead(200, { 'Content-Type': 'application/json', 
+	    	res.writeHead(201, { 'Content-Type': 'application/json', 
 	    		'Access-Control-Allow-Origin': '*',
 	    		'Access-Control-Allow-Headers' : 'Content-Type'
 	    	});
@@ -79,6 +81,7 @@ var server = http.createServer(function (req, res) {
 	    	});
 	    	res.end(JSON.stringify({"message":"Location_POST_OK"}));
 	    });
+	    /*
 	// get info for registered users
 	}else if (parsedUrl.pathname === "/getregistered"){
 	   	res.writeHead(200, { 'Content-Type': 'application/json', 
@@ -87,6 +90,7 @@ var server = http.createServer(function (req, res) {
 	    });
 	    res.end(JSON.stringify(user));
 	// get contacts location data
+	*/
 	}else if (parsedUrl.pathname === "/getcontacts"){
 	   	res.writeHead(200, { 'Content-Type': 'application/json', 
     		'Access-Control-Allow-Origin': '*',
