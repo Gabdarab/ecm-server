@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Gabdarab/ecm-server",
   "dependencies": {
-    "bl": "^0.9.3"
+    "bl": "^0.9.3",
+    "mysql": "^2.5.4"
   }
 }

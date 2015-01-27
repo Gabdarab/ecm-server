@@ -1,0 +1,4 @@
+uuidPK	PeterSQL	KleinSQL	codeSQL	PKmodel	PKplatform	PKversion	1422362986716
+uuidAW	AnneSQL	WeissSQL	codeSQL	AWmodel	AWplatform	AWversion	1422362986716
+uuidTG	ThomasSQL	GrossSQL	codeSQL	TGmodel	TGplatform	TGversion	1422362986716
+uuidPS	PetraSQL	SchwarzSQL	codeSQL	PSmodel	PSplatform	PSversion	1422362986716	
