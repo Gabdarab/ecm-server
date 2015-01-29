@@ -11,6 +11,7 @@ var pool = mysql.createPool({
 
 var server = http.createServer(function (req, res) {
   	
+    console.log(req.url)
   	var parsedUrl = url.parse(req.url, true);
   	var responseString = "";
   	
@@ -23,30 +24,42 @@ var server = http.createServer(function (req, res) {
 	  	
 	  	req.on('end', function(){
 	  		var responseObject = JSON.parse(responseString);
-	  		console.log("postregistraion request recieved.");
+	  		console.log("'postregistraion' request recieved.");
 	  		
 	  		pool.getConnection(function(err, connection){
         		
         		if (err){
+                    console.log("'postregistration' SQL connection error.");
+                    res.writeHead(503, { 'Content-Type': 'application/json', 
+                                            'Access-Control-Allow-Origin': '*',
+                                            'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                    res.end(JSON.stringify({"response":"'postregistration' SQL connection error"}));
             		throw err;
         		}else{
         			//include uuid and other device info for smartphones
             		connection.query("INSERT INTO user VALUES ('tempuuid', '" + responseObject.vorname + "', '" + responseObject.nachname + "', '" + responseObject.regcode + "', " + "'devicemodel', 'deviceplatform', 'deviceversion', " + responseObject.timestamp + ")", function(err, rows){
                 		
                 		if (err) {
-                    		throw err;
+                    		console.log("'postregistration' SQL query error.");
+                            res.writeHead(500, { 'Content-Type': 'application/json', 
+                                            'Access-Control-Allow-Origin': '*',
+                                            'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response":"'postregistration' SQL query error"}));
+                            throw err;
                 		}else{
-                    		console.log("postregistration SQL Query finished.");
+                    		console.log("'postregistration' SQL query finished.");
                     		res.writeHead(201, { 'Content-Type': 'application/json', 
 	    									'Access-Control-Allow-Origin': '*',
 	    									'Access-Control-Allow-Headers' : 'Content-Type'
 	    					});
 	    					
-	    					res.end(JSON.stringify({"response":"postregistration_success"}));
+	    					res.end(JSON.stringify({"response":"'postregistration' success"}));
                 		}
             		})
             		
-            		connection.release(console.log("postregistration connection released!"));
+            		connection.release(console.log("'postregistration' connection released!"));
         		};
     		});
     			
@@ -67,6 +80,12 @@ var server = http.createServer(function (req, res) {
 	  		pool.getConnection(function(err, connection){
         		
         		if (err){
+                    console.log("'postlocation' SQL connection error.");
+                            res.writeHead(503, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'postlocation' SQL connection error"}));
             		throw err;
         		}else{
         			//include uuid for smartphones
@@ -74,15 +93,21 @@ var server = http.createServer(function (req, res) {
             						 "," + responseObject.longitude + "," + responseObject.accuracy + "," + 
             						 responseObject.timestamp + ")", function(err, rows){
                 		if (err) {
-                    		throw err;
+                    		console.log("'postlocation' SQL query error.");
+                            res.writeHead(500, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'postlocation' SQL query error"}));
+
+                            throw err;
                 		}else{
-                    		console.log("'postlocation' SQL Query finished.");
-                    		res.writeHead(200, { 'Content-Type': 'application/json', 
+                    		console.log("'postlocation' SQL query finished.");
+                    		res.writeHead(201, { 'Content-Type': 'application/json', 
 	    						'Access-Control-Allow-Origin': '*',
 	    						'Access-Control-Allow-Headers' : 'Content-Type'
 	    					});
-	    					
-	    					res.end(JSON.stringify({"response" : "postlocation_success"}));
+	    					res.end(JSON.stringify({"response" : "'postlocation' success"}));
                 		}
             		})
             		
@@ -98,11 +123,25 @@ var server = http.createServer(function (req, res) {
 
 	   		pool.getConnection(function(err, connection){
         		if (err){
+                    console.log("'getregistered' SQL connection error.");
+                    res.writeHead(503, { 'Content-Type': 'application/json', 
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers' : 'Content-Type'
+                    });
+                    res.end(JSON.stringify({"response" : "'getregistered' SQL connection error"}));
+
             		throw err;
         		}else{
             		
             		connection.query("SELECT vorname, nachname, regcode FROM user WHERE uuid ='" + parsedUrl.query.uuid + "'", function(err, rows){
                 		if (err) {
+                            console.log("'getregistered' SQL query error.");
+                            res.writeHead(500, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'getregistered' SQL query error"}));
+
                     		throw err;
                 		}else{
                     		console.log("'getregistered' SQL Query finished.");
@@ -110,7 +149,7 @@ var server = http.createServer(function (req, res) {
     							'Access-Control-Allow-Origin': '*',
     							'Access-Control-Allow-Headers' : 'Content-Type'
 	    					});
-	    					res.end(JSON.stringify(rows), console.log(rows));
+	    					res.end(JSON.stringify(rows));
                 		}
             		})
             		
@@ -125,12 +164,26 @@ var server = http.createServer(function (req, res) {
 
 	   		pool.getConnection(function(err, connection){
         		if (err){
+                    console.log("'getcontacts' SQL connection error.");
+                    res.writeHead(503, { 'Content-Type': 'application/json', 
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Headers' : 'Content-Type'
+                    });
+                    res.end(JSON.stringify({"response" : "'getcontacts' SQL connection error"}));
+
             		throw err;
         		}else{
             		
             		connection.query("SELECT s1.vorname, s1.nachname, s2.latitude, s2.longitude, s2.timestamp FROM user s1 INNER JOIN (SELECT uuid, latitude, longitude, max(timestamp) AS timestamp FROM location GROUP BY uuid) AS s2 ON s1.uuid=s2.uuid WHERE s1.uuid <> 'myexampleuuid' AND s1.regcode = '" + parsedUrl.query.regcode + "'", function(err, rows){
                 		if (err) {
-                    		throw err;
+                    	    console.log("'getregistered' SQL query error.");
+                            res.writeHead(500, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'getregistered' SQL query error"}));
+
+                            throw err;
                 		}else{
                     		console.log("'getcontacts' SQL Query finished.");
                     		res.writeHead(200, { 'Content-Type': 'application/json', 
@@ -147,13 +200,12 @@ var server = http.createServer(function (req, res) {
 	   	
 	//api not found
 	}else{
-		
 		res.writeHead(404, { 'Content-Type': 'application/json', 
 	    	'Access-Control-Allow-Origin': '*',
 	    	'Access-Control-Allow-Headers' : 'Content-Type'
 	    });
 	    
-	    res.end();
+	    res.end(JSON.stringify({"response" : "URL not found"}));
 
 	}
 });
