@@ -197,9 +197,62 @@ var server = http.createServer(function (req, res) {
             		connection.release(console.log("'getcontacts' connection released!"));
         		};
     		});
-	   	
-	//api not found
-	}else{
+	//post seen contacts
+	}else if (parsedUrl.pathname === "/postseencontacts") {
+        
+        req.on('data', function (data){
+            responseString += data;
+        });
+        
+        req.on('end', function(){
+            
+            var responseObject = JSON.parse(responseString);
+            console.log("'postseencontacts' request recieved.");
+            //var dateToday = new Date(responseObject.timestamp);
+            
+            pool.getConnection(function(err, connection){
+                
+                if (err){
+                    console.log("'postseencontacts' SQL connection error.");
+                            res.writeHead(503, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'postseencontacts' SQL connection error"}));
+                    throw err;
+                }else{
+                    //******
+                    //write seen JSON to sql 
+                    //include uuid for smartphones
+                    connection.query("INSERT INTO seen VALUES ('myexampleuuid'," + responseObject.latitude + 
+                                     "," + responseObject.longitude + "," + responseObject.accuracy + "," + 
+                                     responseObject.timestamp + ")", function(err, rows){
+                        if (err) {
+                            console.log("'postseencontacts' SQL query error.");
+                            res.writeHead(500, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'postseencontacts' SQL query error"}));
+
+                            throw err;
+                        }else{
+                            console.log("'postseencontacts' SQL query finished.");
+                            res.writeHead(201, { 'Content-Type': 'application/json', 
+                                'Access-Control-Allow-Origin': '*',
+                                'Access-Control-Allow-Headers' : 'Content-Type'
+                            });
+                            res.end(JSON.stringify({"response" : "'postseencontacts' success"}));
+                        }
+                    })
+                    
+                    connection.release(console.log("'postseencontacts' connection released!"));
+                    //******
+                };
+            });
+        });
+    //api not found
+    }else{
 		res.writeHead(404, { 'Content-Type': 'application/json', 
 	    	'Access-Control-Allow-Origin': '*',
 	    	'Access-Control-Allow-Headers' : 'Content-Type'
